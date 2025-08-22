@@ -14,7 +14,8 @@
 
         body {
             font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -50,11 +51,17 @@
             cursor: not-allowed;
         }
 
+        .menu-button.active {
+            background-color: #27ae60;
+        }
+
         .menu-input, .menu-select {
             padding: 8px;
-            border: 1px solid #bdc3c7;
+            border: 1px solid #555;
             border-radius: 4px;
             font-size: 14px;
+            background-color: #3a3a3a;
+            color: #e0e0e0;
         }
 
         /* Main Container */
@@ -67,14 +74,14 @@
         /* Player Pool */
         .player-pool {
             width: 300px;
-            background-color: white;
-            border-right: 2px solid #bdc3c7;
+            background-color: #2a2a2a;
+            border-right: 2px solid #444;
             display: flex;
             flex-direction: column;
         }
 
         .pool-header {
-            background-color: #34495e;
+            background-color: #1a1a1a;
             color: white;
             padding: 15px;
             font-weight: bold;
@@ -83,7 +90,7 @@
 
         .filter-section {
             padding: 15px;
-            border-bottom: 1px solid #ecf0f1;
+            border-bottom: 1px solid #444;
         }
 
         .filter-row {
@@ -93,10 +100,40 @@
             gap: 10px;
         }
 
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .filter-btn {
+            padding: 5px 10px;
+            background-color: #3a3a3a;
+            border: 1px solid #555;
+            color: #e0e0e0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background-color: #4a4a4a;
+        }
+
+        .filter-btn.active {
+            background-color: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+
         .filter-select {
             flex: 1;
             padding: 6px;
-            border: 1px solid #bdc3c7;
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            border: 1px solid #555;
             border-radius: 4px;
         }
 
@@ -122,8 +159,9 @@
 
         /* Player Card */
         .player-card {
-            background-color: #ecf0f1;
-            border: 1px solid #bdc3c7;
+            background-color: #3a3a3a;
+            border: 1px solid #555;
+            color: #e0e0e0;
             border-radius: 6px;
             padding: 10px;
             margin-bottom: 8px;
@@ -133,13 +171,27 @@
         }
 
         .player-card:hover {
-            background-color: #d5dbdb;
+            background-color: #4a4a4a;
             transform: translateY(-1px);
         }
 
         .player-card.dragging {
             opacity: 0.5;
             cursor: grabbing;
+        }
+
+        .player-card.compact {
+            padding: 6px 10px;
+        }
+
+        .player-card.compact .player-details {
+            display: flex;
+            gap: 10px;
+            font-size: 11px;
+        }
+
+        .player-card.compact .player-detail:not(.show-compact) {
+            display: none;
         }
 
         .player-name {
@@ -150,11 +202,30 @@
 
         .player-details {
             font-size: 12px;
-            color: #7f8c8d;
+            color: #aaa;
         }
 
         .player-detail {
             margin-bottom: 2px;
+        }
+
+        .player-tag {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .tag-ref {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .tag-gm {
+            background-color: #8e44ad;
+            color: white;
         }
 
         /* Draft Board */
@@ -162,7 +233,7 @@
             flex: 1;
             overflow-x: auto;
             padding: 20px;
-            background-color: #f8f9fa;
+            background-color: #222;
         }
 
         .teams-container {
@@ -172,9 +243,9 @@
         }
 
         .team-column {
-            width: 200px;
-            background-color: white;
-            border: 2px solid #bdc3c7;
+            width: 220px;
+            background-color: #2a2a2a;
+            border: 2px solid #555;
             border-radius: 8px;
             min-height: 600px;
         }
@@ -195,10 +266,21 @@
         .color-select {
             flex: 1;
             padding: 6px;
-            border: 1px solid #bdc3c7;
+            border: 1px solid #555;
             border-radius: 4px;
-            background-color: white;
-            color: black;
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+        }
+
+        .team-sort-select {
+            padding: 4px;
+            font-size: 11px;
+            border: 1px solid #555;
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            border-radius: 3px;
+            margin-bottom: 5px;
+            width: 100%;
         }
 
         .team-stats {
@@ -237,34 +319,34 @@
 
         .drop-zone {
             min-height: 500px;
-            border: 2px dashed #bdc3c7;
+            border: 2px dashed #555;
+            color: #999;
             border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #95a5a6;
             font-style: italic;
             margin-top: 10px;
         }
 
         .drop-zone.drag-over {
             border-color: #3498db;
-            background-color: #ebf3fd;
+            background-color: #1a3d5c;
         }
 
-        /* Color Classes */
+        /* Updated Color Classes with better contrast */
         .team-red { background-color: #fb0102; color: #ffffff; }
         .team-blue { background-color: #0100fe; color: #ffffff; }
-        .team-lt-blue { background-color: #9fc5e9; color: #ffffff; }
-        .team-tan { background-color: #f5cba3; color: #ffffff; }
+        .team-lt-blue { background-color: #5e9ed6; color: #ffffff; }
+        .team-tan { background-color: #b8956f; color: #ffffff; }
         .team-black { background-color: #000000; color: #ffffff; }
-        .team-orange { background-color: #fd9a01; color: #ffffff; }
+        .team-orange { background-color: #fd9a01; color: #000000; }
         .team-green { background-color: #39751f; color: #ffffff; }
-        .team-teal { background-color: #00ffff; color: #ffffff; }
+        .team-teal { background-color: #007a7a; color: #ffffff; }
         .team-maroon { background-color: #a64d79; color: #ffffff; }
-        .team-gray { background-color: #999999; color: #ffffff; }
+        .team-gray { background-color: #666666; color: #ffffff; }
         .team-purple { background-color: #9a00ff; color: #ffffff; }
-        .team-white { background-color: #ecf0f1; color: #ffffff; border: 1px solid #bdc3c7; }
+        .team-white { background-color: #f0f0f0; color: #000000; border: 2px solid #000; }
 
         .hidden {
             display: none;
@@ -272,6 +354,17 @@
 
         .file-input {
             display: none;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .toggle-label {
+            font-size: 12px;
+            color: white;
         }
     </style>
 </head>
@@ -298,6 +391,11 @@
         <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls,.csv">
         
         <input type="text" class="menu-input" id="seasonNameInput" placeholder="Name of Season">
+        
+        <div class="view-toggle">
+            <span class="toggle-label">Compact:</span>
+            <button class="menu-button" id="toggleCompactBtn">OFF</button>
+        </div>
     </div>
 
     <!-- Main Container -->
@@ -307,6 +405,15 @@
             <div class="pool-header">Player Pool</div>
             
             <div class="filter-section">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="forward">Forwards</button>
+                    <button class="filter-btn" data-filter="defense">Defense</button>
+                    <button class="filter-btn" data-filter="ref">Refs</button>
+                    <button class="filter-btn" data-filter="gm">GMs</button>
+                    <button class="filter-btn" data-filter="buddy">Has Buddy</button>
+                </div>
+                
                 <div class="filter-row">
                     <select class="filter-select" id="sortBySelect">
                         <option value="name">Player Name</option>
@@ -336,7 +443,9 @@
         let players = [];
         let teams = [];
         let currentSort = { by: 'name', order: 'asc' };
+        let currentFilter = 'all';
         let draftStarted = false;
+        let compactView = false;
 
         // Team colors
         const teamColors = [
@@ -379,6 +488,29 @@
         });
         document.getElementById('sortBtn').addEventListener('click', toggleSort);
         document.getElementById('sortBySelect').addEventListener('change', updateSort);
+        
+        // Compact view toggle
+        document.getElementById('toggleCompactBtn').addEventListener('click', () => {
+            compactView = !compactView;
+            document.getElementById('toggleCompactBtn').textContent = compactView ? 'ON' : 'OFF';
+            document.getElementById('toggleCompactBtn').classList.toggle('active', compactView);
+            
+            // Re-render all player cards
+            renderPlayers();
+            teams.forEach((team, index) => {
+                renderTeamPlayers(index + 1);
+            });
+        });
+        
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.dataset.filter;
+                renderPlayers();
+            });
+        });
 
         // Download template
         function downloadTemplate() {
@@ -389,7 +521,9 @@
                 'preferred position': 'Forward',
                 'Skill Rating': '7',
                 'Veteran Status': 'veteran',
-                'Buddy Pick': ''
+                'Buddy Pick': '',
+                'Ref': 'n',
+                'GM': 'n'
             },
             {
                 'First Name': 'Jane',
@@ -398,7 +532,9 @@
                 'preferred position': 'Defense',
                 'Skill Rating': '5',
                 'Veteran Status': 'rookie',
-                'Buddy Pick': ''
+                'Buddy Pick': '',
+                'Ref': 'n',
+                'GM': 'y'
             }];
 
             const worksheet = XLSX.utils.json_to_sheet(templateData);
@@ -413,7 +549,9 @@
                 { wch: 15 }, // preferred position
                 { wch: 12 }, // Skill Rating
                 { wch: 15 }, // Veteran Status
-                { wch: 15 }  // Buddy Pick
+                { wch: 15 }, // Buddy Pick
+                { wch: 5 },  // Ref
+                { wch: 5 }   // GM
             ];
             
             const filename = 'Hockey_Draft_Template.xlsx';
@@ -445,6 +583,10 @@
                             position = 'Forward'; // Default to Forward if unclear
                         }
                         
+                        // Check for Ref and GM status
+                        const isRef = (row['Ref'] || 'n').toString().toLowerCase() === 'y';
+                        const isGM = (row['GM'] || 'n').toString().toLowerCase() === 'y';
+                        
                         return {
                             id: index + 1,
                             firstName: row['First Name'] || '',
@@ -455,6 +597,8 @@
                             veteranStatus: row['Veteran Status'] || 'rookie',
                             buddyPick: row['Buddy Pick'] || '',
                             email: row['Email'] || '',
+                            isRef: isRef,
+                            isGM: isGM,
                             teamId: null
                         };
                     });
@@ -494,7 +638,8 @@
                 teams.push({
                     id: i + 1,
                     color: 'white',
-                    players: []
+                    players: [],
+                    sortBy: 'default'
                 });
             }
 
@@ -563,6 +708,13 @@
                                 ).join('')}
                             </select>
                         </div>
+                        <select class="team-sort-select" data-team-id="${team.id}">
+                            <option value="default">Sort: Default</option>
+                            <option value="rating-high">Rating: High to Low</option>
+                            <option value="rating-low">Rating: Low to High</option>
+                            <option value="position">Position</option>
+                            <option value="position-rating">Position + Rating</option>
+                        </select>
                         <div class="team-stats">
                             <div class="stat-row">
                                 <span>Forwards:</span>
@@ -571,6 +723,14 @@
                             <div class="stat-row">
                                 <span>Defense:</span>
                                 <span class="defense-count">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span>Avg Fwd Rating:</span>
+                                <span class="avg-fwd-rating">0.0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span>Avg Def Rating:</span>
+                                <span class="avg-def-rating">0.0</span>
                             </div>
                             <div class="stat-row">
                                 <span>Total Skill:</span>
@@ -604,6 +764,14 @@
                     // Update all color dropdowns to prevent duplicates
                     updateColorDropdowns();
                 });
+                
+                // Add sort change event listener
+                const sortSelect = teamColumn.querySelector('.team-sort-select');
+                sortSelect.addEventListener('change', (e) => {
+                    const teamId = parseInt(e.target.dataset.teamId);
+                    teams[teamId - 1].sortBy = e.target.value;
+                    renderTeamPlayers(teamId);
+                });
 
                 // Set initial color and apply styling
                 const initialColor = teamColors.find(c => c.value === team.color);
@@ -623,10 +791,31 @@
             });
         }
 
+        // Filter players based on current filter
+        function filterPlayers(playersList) {
+            switch (currentFilter) {
+                case 'forward':
+                    return playersList.filter(p => p.position === 'Forward');
+                case 'defense':
+                    return playersList.filter(p => p.position === 'Defense');
+                case 'ref':
+                    return playersList.filter(p => p.isRef);
+                case 'gm':
+                    return playersList.filter(p => p.isGM);
+                case 'buddy':
+                    return playersList.filter(p => p.buddyPick);
+                default:
+                    return playersList;
+            }
+        }
+
         // Render players in the pool
         function renderPlayers() {
             const container = document.getElementById('playersContainer');
-            const poolPlayers = players.filter(player => player.teamId === null);
+            let poolPlayers = players.filter(player => player.teamId === null);
+            
+            // Apply filter
+            poolPlayers = filterPlayers(poolPlayers);
             
             // Sort players
             const sortedPlayers = [...poolPlayers].sort((a, b) => {
@@ -657,13 +846,33 @@
 
             container.innerHTML = '';
             sortedPlayers.forEach(player => {
-                const playerCard = document.createElement('div');
-                playerCard.className = 'player-card';
-                playerCard.draggable = true;
-                playerCard.dataset.playerId = player.id;
-                
+                const playerCard = createPlayerCard(player);
+                container.appendChild(playerCard);
+            });
+        }
+
+        // Create player card element
+        function createPlayerCard(player) {
+            const playerCard = document.createElement('div');
+            playerCard.className = `player-card ${compactView ? 'compact' : ''}`;
+            playerCard.draggable = true;
+            playerCard.dataset.playerId = player.id;
+            
+            let tags = '';
+            if (player.isRef) tags += '<span class="player-tag tag-ref">REF</span>';
+            if (player.isGM) tags += '<span class="player-tag tag-gm">GM</span>';
+            
+            if (compactView) {
                 playerCard.innerHTML = `
-                    <div class="player-name">${player.name}</div>
+                    <div class="player-name">${player.name}${tags}</div>
+                    <div class="player-details">
+                        <div class="player-detail show-compact">${player.position}</div>
+                        <div class="player-detail show-compact">Skill: ${player.skillRating}</div>
+                    </div>
+                `;
+            } else {
+                playerCard.innerHTML = `
+                    <div class="player-name">${player.name}${tags}</div>
                     <div class="player-details">
                         <div class="player-detail">Position: ${player.position}</div>
                         <div class="player-detail">Skill: ${player.skillRating}</div>
@@ -671,11 +880,30 @@
                         ${player.buddyPick ? `<div class="player-detail">Buddy: ${player.buddyPick}</div>` : ''}
                     </div>
                 `;
+            }
 
-                playerCard.addEventListener('dragstart', handleDragStart);
-                playerCard.addEventListener('dragend', handleDragEnd);
-                
-                container.appendChild(playerCard);
+            playerCard.addEventListener('dragstart', handleDragStart);
+            playerCard.addEventListener('dragend', handleDragEnd);
+            
+            return playerCard;
+        }
+
+        // Sort team players
+        function sortTeamPlayers(teamPlayers, sortBy) {
+            return [...teamPlayers].sort((a, b) => {
+                switch (sortBy) {
+                    case 'rating-high':
+                        return b.skillRating - a.skillRating;
+                    case 'rating-low':
+                        return a.skillRating - b.skillRating;
+                    case 'position':
+                        return a.position.localeCompare(b.position);
+                    case 'position-rating':
+                        const posComp = a.position.localeCompare(b.position);
+                        return posComp !== 0 ? posComp : b.skillRating - a.skillRating;
+                    default:
+                        return 0; // Keep original order
+                }
             });
         }
 
@@ -754,27 +982,13 @@
 
             const team = teams[teamId - 1];
             teamPlayersDiv.innerHTML = '';
+            
+            // Sort team players based on team's sort setting
+            const sortedPlayers = sortTeamPlayers(team.players, team.sortBy);
 
-            team.players.forEach(player => {
-                const playerCard = document.createElement('div');
-                playerCard.className = 'player-card';
-                playerCard.draggable = true;
-                playerCard.dataset.playerId = player.id;
-                
-                playerCard.innerHTML = `
-                    <div class="player-name">${player.name}</div>
-                    <div class="player-details">
-                        <div class="player-detail">Position: ${player.position}</div>
-                        <div class="player-detail">Skill: ${player.skillRating}</div>
-                        <div class="player-detail">Status: ${player.veteranStatus}</div>
-                        ${player.buddyPick ? `<div class="player-detail">Buddy: ${player.buddyPick}</div>` : ''}
-                    </div>
-                `;
-
-                playerCard.addEventListener('dragstart', handleDragStart);
-                playerCard.addEventListener('dragend', handleDragEnd);
+            sortedPlayers.forEach(player => {
+                const playerCard = createPlayerCard(player);
                 playerCard.addEventListener('dblclick', () => movePlayerToTeam(player.id, null));
-                
                 teamPlayersDiv.appendChild(playerCard);
             });
 
@@ -794,18 +1008,32 @@
         // Update team stats
         function updateTeamStats(teamId) {
             const team = teams[teamId - 1];
-            const forwards = team.players.filter(p => p.position === 'Forward').length;
-            const defense = team.players.filter(p => p.position === 'Defense').length;
+            const forwards = team.players.filter(p => p.position === 'Forward');
+            const defense = team.players.filter(p => p.position === 'Defense');
+            
+            const forwardCount = forwards.length;
+            const defenseCount = defense.length;
+            
             const totalSkill = team.players.reduce((sum, p) => sum + p.skillRating, 0);
             const avgRating = team.players.length > 0 
                 ? (totalSkill / team.players.length).toFixed(1)
                 : '0.0';
+            
+            const avgFwdRating = forwards.length > 0
+                ? (forwards.reduce((sum, p) => sum + p.skillRating, 0) / forwards.length).toFixed(1)
+                : '0.0';
+            
+            const avgDefRating = defense.length > 0
+                ? (defense.reduce((sum, p) => sum + p.skillRating, 0) / defense.length).toFixed(1)
+                : '0.0';
 
             const teamColumn = document.querySelector(`.team-players[data-team-id="${teamId}"]`).closest('.team-column');
-            teamColumn.querySelector('.forwards-count').textContent = forwards;
-            teamColumn.querySelector('.defense-count').textContent = defense;
+            teamColumn.querySelector('.forwards-count').textContent = forwardCount;
+            teamColumn.querySelector('.defense-count').textContent = defenseCount;
             teamColumn.querySelector('.total-skill').textContent = totalSkill;
             teamColumn.querySelector('.avg-rating').textContent = avgRating;
+            teamColumn.querySelector('.avg-fwd-rating').textContent = avgFwdRating;
+            teamColumn.querySelector('.avg-def-rating').textContent = avgDefRating;
         }
 
         // Sort functions
@@ -836,7 +1064,9 @@
                         'preferred position': player.position,
                         'Skill Rating': player.skillRating,
                         'Veteran Status': player.veteranStatus,
-                        'Buddy Pick': player.buddyPick
+                        'Buddy Pick': player.buddyPick,
+                        'Ref': player.isRef ? 'y' : 'n',
+                        'GM': player.isGM ? 'y' : 'n'
                     });
                 });
             });
@@ -872,7 +1102,8 @@
                 teams.push({
                     id: i + 1,
                     color: 'white',
-                    players: []
+                    players: [],
+                    sortBy: 'default'
                 });
             }
             
@@ -880,128 +1111,16 @@
             console.log('Teams after reset:', teams.map(t => ({id: t.id, players: t.players.length})));
             
             // Force complete UI refresh
-            // First, clear the teams container completely
-            const teamsContainer = document.getElementById('teamsContainer');
-            teamsContainer.innerHTML = '';
+            generateTeamColumns();
             
-            // Regenerate all team columns
-            teams.forEach(team => {
-                const teamColumn = document.createElement('div');
-                teamColumn.className = 'team-column';
-                teamColumn.innerHTML = `
-                    <div class="team-header team-white">
-                        <div class="team-color-row">
-                            <select class="color-select" data-team-id="${team.id}">
-                                ${teamColors.map(color => 
-                                    `<option value="${color.value}" ${color.value === 'white' ? 'selected' : ''}>${color.label}</option>`
-                                ).join('')}
-                            </select>
-                        </div>
-                        <div class="team-stats">
-                            <div class="stat-row">
-                                <span>Forwards:</span>
-                                <span class="forwards-count">0</span>
-                            </div>
-                            <div class="stat-row">
-                                <span>Defense:</span>
-                                <span class="defense-count">0</span>
-                            </div>
-                            <div class="stat-row">
-                                <span>Total Skill:</span>
-                                <span class="total-skill">0</span>
-                            </div>
-                            <div class="stat-row">
-                                <span>Avg Rating:</span>
-                                <span class="avg-rating">0.0</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="team-players" data-team-id="${team.id}">
-                        <div class="drop-zone">Drop players here</div>
-                    </div>
-                `;
-
-                // Add color change event listener
-                const colorSelect = teamColumn.querySelector('.color-select');
-                colorSelect.addEventListener('change', (e) => {
-                    const teamId = parseInt(e.target.dataset.teamId);
-                    const color = e.target.value;
-                    const colorClass = teamColors.find(c => c.value === color).class;
-                    
-                    // Update team data
-                    teams[teamId - 1].color = color;
-                    
-                    // Update header styling
-                    const header = teamColumn.querySelector('.team-header');
-                    header.className = `team-header ${colorClass}`;
-                    
-                    // Update all color dropdowns to prevent duplicates
-                    updateColorDropdowns();
-                });
-
-                // Add drop zone event listeners
-                const teamPlayersDiv = teamColumn.querySelector('.team-players');
-                teamPlayersDiv.addEventListener('dragover', handleDragOver);
-                teamPlayersDiv.addEventListener('dragleave', handleDragLeave);
-                teamPlayersDiv.addEventListener('drop', handleDrop);
-
-                teamsContainer.appendChild(teamColumn);
+            // Initialize team displays
+            teams.forEach((team, index) => {
+                renderTeamPlayers(index + 1);
+                updateTeamStats(index + 1);
             });
             
-            // Force re-render the player pool
-            const playersContainer = document.getElementById('playersContainer');
-            playersContainer.innerHTML = '';
-            
-            // Re-add all players to the pool
-            const poolPlayers = players.filter(player => player.teamId === null);
-            console.log('Players to show in pool:', poolPlayers.length);
-            
-            // Sort and render players
-            const sortedPlayers = [...poolPlayers].sort((a, b) => {
-                let comparison = 0;
-                
-                switch (currentSort.by) {
-                    case 'name':
-                        comparison = a.lastName.toLowerCase().localeCompare(b.lastName.toLowerCase());
-                        break;
-                    case 'position':
-                        comparison = a.position.localeCompare(b.position);
-                        if (comparison === 0) {
-                            comparison = b.skillRating - a.skillRating;
-                        }
-                        break;
-                    case 'skill':
-                        comparison = a.skillRating - b.skillRating;
-                        break;
-                    case 'veteran':
-                        comparison = a.veteranStatus.localeCompare(b.veteranStatus);
-                        break;
-                }
-                
-                return currentSort.order === 'asc' ? comparison : -comparison;
-            });
-
-            sortedPlayers.forEach(player => {
-                const playerCard = document.createElement('div');
-                playerCard.className = 'player-card';
-                playerCard.draggable = true;
-                playerCard.dataset.playerId = player.id;
-                
-                playerCard.innerHTML = `
-                    <div class="player-name">${player.name}</div>
-                    <div class="player-details">
-                        <div class="player-detail">Position: ${player.position}</div>
-                        <div class="player-detail">Skill: ${player.skillRating}</div>
-                        <div class="player-detail">Status: ${player.veteranStatus}</div>
-                        ${player.buddyPick ? `<div class="player-detail">Buddy: ${player.buddyPick}</div>` : ''}
-                    </div>
-                `;
-
-                playerCard.addEventListener('dragstart', handleDragStart);
-                playerCard.addEventListener('dragend', handleDragEnd);
-                
-                playersContainer.appendChild(playerCard);
-            });
+            // Re-render player pool
+            renderPlayers();
             
             // Update color dropdowns
             updateColorDropdowns();
