@@ -594,6 +594,7 @@
     <!-- Top Menu -->
     <div class="top-menu">
         <button class="menu-button" id="startDraftBtn">Start Draft</button>
+        <button class="menu-button" id="assignGMsBtn" disabled>Assign GMs</button>
         <button class="menu-button" id="saveDraftBtn" disabled>Save Draft</button>
         <button class="menu-button" id="resetDraftBtn" disabled>Reset Draft</button>
         <button class="menu-button danger" id="clearStorageBtn" style="display: none;">Clear Saved Data</button>
@@ -943,6 +944,7 @@
 
         document.getElementById('fileInput').addEventListener('change', handleFileUpload);
         document.getElementById('startDraftBtn').addEventListener('click', startDraft);
+        document.getElementById('assignGMsBtn').addEventListener('click', assignGMsToTeams);
         document.getElementById('saveDraftBtn').addEventListener('click', saveDraft);
         document.getElementById('resetDraftBtn').addEventListener('click', () => {
             console.log('Reset button clicked');
@@ -1820,7 +1822,7 @@
                 updateTeamStats(index + 1);
             });
             
-            // Re-render player pool
+            // Re-render player pool (all players including GMs will be back in pool)
             renderPlayers();
             
             // Update color dropdowns
@@ -1832,13 +1834,87 @@
             triggerAutoSave();
         }
 
+        // Assign GMs to teams automatically
+        function assignGMsToTeams() {
+            // Find all GMs in the player pool (not already on teams)
+            const availableGMs = players.filter(p => p.isGM && p.teamId === null);
+            const numTeams = teams.length;
+            
+            console.log(`Found ${availableGMs.length} GMs for ${numTeams} teams`);
+            
+            if (availableGMs.length === 0) {
+                alert('No GMs found in the player pool.');
+                return;
+            }
+            
+            if (availableGMs.length < numTeams) {
+                alert(`Not enough GMs! Found ${availableGMs.length} GMs but have ${numTeams} teams.\n\nPlease mark more players as GMs or reduce the number of teams.`);
+                return;
+            }
+            
+            if (availableGMs.length > numTeams) {
+                alert(`Too many GMs! Found ${availableGMs.length} GMs but only have ${numTeams} teams.\n\nOnly the first ${numTeams} GMs will be assigned.`);
+            }
+            
+            // Check if any teams already have GMs
+            const teamsWithGMs = teams.filter(team => 
+                team.players.some(player => player.isGM)
+            );
+            
+            if (teamsWithGMs.length > 0) {
+                const confirmMessage = `${teamsWithGMs.length} team(s) already have GMs. Do you want to continue assigning GMs to teams without GMs?`;
+                console.log(confirmMessage);
+                // In sandbox, just proceed
+            }
+            
+            // Assign one GM to each team that doesn't have one
+            let gmIndex = 0;
+            teams.forEach((team, teamIndex) => {
+                // Check if team already has a GM
+                const hasGM = team.players.some(player => player.isGM);
+                
+                if (!hasGM && gmIndex < availableGMs.length) {
+                    const gm = availableGMs[gmIndex];
+                    
+                    // Check if GM has valid skill rating
+                    if (gm.skillRating === 0) {
+                        console.warn(`Warning: GM ${gm.name} has no skill rating. Assigning anyway.`);
+                    }
+                    
+                    // Move GM to team
+                    gm.teamId = team.id;
+                    team.players.push(gm);
+                    
+                    console.log(`Assigned GM ${gm.name} to Team ${team.id}`);
+                    gmIndex++;
+                }
+            });
+            
+            // Re-render everything
+            renderPlayers();
+            teams.forEach((team, index) => {
+                renderTeamPlayers(index + 1);
+                updateTeamStats(index + 1);
+            });
+            
+            // Auto-save
+            triggerAutoSave();
+            
+            const assignedCount = Math.min(availableGMs.length, numTeams - teamsWithGMs.length);
+            if (assignedCount > 0) {
+                console.log(`Successfully assigned ${assignedCount} GMs to teams.`);
+            }
+        }
+
         // Update button states
         function updateButtonStates() {
             const saveBtn = document.getElementById('saveDraftBtn');
             const resetBtn = document.getElementById('resetDraftBtn');
+            const assignGMsBtn = document.getElementById('assignGMsBtn');
             
             saveBtn.disabled = !draftStarted;
             resetBtn.disabled = !draftStarted;
+            assignGMsBtn.disabled = !draftStarted;
             
             console.log('Draft started:', draftStarted, 'Reset button disabled:', resetBtn.disabled);
         }
