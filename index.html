@@ -80,6 +80,46 @@
             background-color: #3a3a3a;
             color: #e0e0e0;
         }
+        
+        .menu-input.invalid, .menu-select.invalid {
+            border: 2px solid #e74c3c;
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+        
+        .menu-input.valid, .menu-select.valid {
+            border: 2px solid #27ae60;
+        }
+        
+        .validation-message {
+            position: absolute;
+            top: 100%;
+            left: 20px;
+            right: 20px;
+            margin-top: 5px;
+            padding: 5px 10px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            display: none;
+            z-index: 100;
+        }
+        
+        .validation-message.show {
+            display: block;
+        }
+        
+        .start-requirements {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: #e74c3c;
+        }
+        
+        .start-requirements.ready {
+            color: #27ae60;
+        }
 
         /* Save Status Indicator */
         .save-status {
@@ -593,7 +633,7 @@
 <body>
     <!-- Top Menu -->
     <div class="top-menu">
-        <button class="menu-button" id="startDraftBtn">Start Draft</button>
+        <button class="menu-button" id="startDraftBtn" disabled>Start Draft</button>
         <button class="menu-button" id="assignGMsBtn" disabled>Assign GMs</button>
         <button class="menu-button" id="saveDraftBtn" disabled>Save Draft</button>
         <button class="menu-button" id="resetDraftBtn" disabled>Reset Draft</button>
@@ -621,6 +661,10 @@
             <button class="menu-button" id="toggleCompactBtn">OFF</button>
         </div>
         
+        <div class="start-requirements" id="startRequirements">
+            <span id="requirementsText">Missing: Teams, Players, Season Name</span>
+        </div>
+        
         <div class="save-status" id="saveStatus">✓ Draft Saved</div>
     </div>
 
@@ -635,6 +679,20 @@
             <div class="modal-buttons">
                 <button class="menu-button" id="resumeDraftBtn">Resume Draft</button>
                 <button class="menu-button warning" id="startFreshBtn">Start Fresh</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reset Confirmation Modal -->
+    <div class="modal-overlay" id="resetConfirmModal">
+        <div class="modal-content">
+            <h2 class="modal-title" style="color: #e74c3c;">Reset Draft?</h2>
+            <p class="modal-text">Are you sure you want to reset the draft?</p>
+            <p class="modal-text" style="font-weight: bold;">This action cannot be undone!</p>
+            <p class="modal-text" style="margin-top: 15px;">All team assignments will be cleared and all players will return to the pool.</p>
+            <div class="modal-buttons">
+                <button class="menu-button" id="cancelResetBtn">Cancel</button>
+                <button class="menu-button danger" id="confirmResetBtn">Reset Draft</button>
             </div>
         </div>
     </div>
@@ -718,9 +776,81 @@
             { value: 'white', label: 'White', class: 'team-white' }
         ];
 
-        // Check for saved draft on page load
+        // Validation function to check if ready to start draft
+        function validateStartRequirements() {
+            const numTeams = document.getElementById('numTeamsSelect').value;
+            const seasonName = document.getElementById('seasonNameInput').value.trim();
+            const hasPlayers = players.length > 0;
+            
+            const numTeamsSelect = document.getElementById('numTeamsSelect');
+            const seasonNameInput = document.getElementById('seasonNameInput');
+            const uploadBtn = document.getElementById('uploadFileBtn');
+            const startBtn = document.getElementById('startDraftBtn');
+            const requirementsDiv = document.getElementById('startRequirements');
+            const requirementsText = document.getElementById('requirementsText');
+            
+            let missing = [];
+            let isValid = true;
+            
+            // Check teams
+            if (!numTeams) {
+                missing.push('Teams');
+                numTeamsSelect.classList.add('invalid');
+                numTeamsSelect.classList.remove('valid');
+                isValid = false;
+            } else {
+                numTeamsSelect.classList.add('valid');
+                numTeamsSelect.classList.remove('invalid');
+            }
+            
+            // Check season name
+            if (!seasonName) {
+                missing.push('Season Name');
+                seasonNameInput.classList.add('invalid');
+                seasonNameInput.classList.remove('valid');
+                isValid = false;
+            } else {
+                seasonNameInput.classList.add('valid');
+                seasonNameInput.classList.remove('invalid');
+            }
+            
+            // Check players
+            if (!hasPlayers) {
+                missing.push('Players (Upload File)');
+                uploadBtn.classList.add('invalid');
+                isValid = false;
+            } else {
+                uploadBtn.classList.remove('invalid');
+                uploadBtn.classList.add('valid');
+            }
+            
+            // Update UI
+            if (isValid && !draftStarted) {
+                startBtn.disabled = false;
+                requirementsDiv.classList.add('ready');
+                requirementsText.textContent = '✓ Ready to start draft!';
+                requirementsText.style.color = '#27ae60';
+            } else if (!draftStarted) {
+                startBtn.disabled = true;
+                requirementsDiv.classList.remove('ready');
+                requirementsText.textContent = 'Missing: ' + missing.join(', ');
+                requirementsText.style.color = '#e74c3c';
+            } else {
+                // Draft already started
+                requirementsDiv.style.display = 'none';
+            }
+            
+            return isValid;
+        }
+        
+        // Add validation listeners
+        document.getElementById('numTeamsSelect').addEventListener('change', validateStartRequirements);
+        document.getElementById('seasonNameInput').addEventListener('input', validateStartRequirements);
+        
+        // Call validation on page load
         window.addEventListener('DOMContentLoaded', () => {
             checkForSavedDraft();
+            validateStartRequirements();
             
             // Add modal close handlers
             const zeroRatingOkBtn = document.getElementById('zeroRatingOkBtn');
@@ -730,11 +860,18 @@
                 });
             }
             
-            // Close modal when clicking outside
+            // Close modals when clicking outside
             document.addEventListener('click', function(e) {
-                const modal = document.getElementById('zeroRatingModal');
-                if (modal && modal.classList.contains('show') && !modal.contains(e.target)) {
-                    modal.classList.remove('show');
+                // Zero rating modal
+                const zeroModal = document.getElementById('zeroRatingModal');
+                if (zeroModal && zeroModal.classList.contains('show') && !zeroModal.contains(e.target)) {
+                    zeroModal.classList.remove('show');
+                }
+                
+                // Reset confirmation modal - clicking outside cancels
+                const resetModal = document.getElementById('resetConfirmModal');
+                if (resetModal && resetModal.classList.contains('show') && e.target === resetModal) {
+                    resetModal.classList.remove('show');
                 }
             });
         });
@@ -840,6 +977,9 @@
                 
                 renderPlayers();
                 document.getElementById('clearStorageBtn').style.display = 'inline-block';
+                
+                // Validate requirements after loading
+                validateStartRequirements();
                 
                 console.log('Draft loaded successfully from', draftState.timestamp);
                 return true;
@@ -947,8 +1087,20 @@
         document.getElementById('assignGMsBtn').addEventListener('click', assignGMsToTeams);
         document.getElementById('saveDraftBtn').addEventListener('click', saveDraft);
         document.getElementById('resetDraftBtn').addEventListener('click', () => {
-            console.log('Reset button clicked');
-            // Add visual feedback since confirm dialog doesn't work in sandbox
+            console.log('Reset button clicked - showing confirmation modal');
+            // Show confirmation modal instead of directly resetting
+            document.getElementById('resetConfirmModal').classList.add('show');
+        });
+        
+        // Reset confirmation modal handlers
+        document.getElementById('cancelResetBtn').addEventListener('click', () => {
+            document.getElementById('resetConfirmModal').classList.remove('show');
+        });
+        
+        document.getElementById('confirmResetBtn').addEventListener('click', () => {
+            document.getElementById('resetConfirmModal').classList.remove('show');
+            
+            // Visual feedback
             const resetBtn = document.getElementById('resetDraftBtn');
             const originalText = resetBtn.textContent;
             resetBtn.textContent = 'Resetting...';
@@ -1162,6 +1314,9 @@
                         alert(`Warning: ${missingRatings} players have missing or invalid skill ratings.\n\nThese players are marked in red and must have their ratings set (1-10) before being assigned to teams.`);
                     }
                     
+                    // Validate start requirements after upload
+                    validateStartRequirements();
+                    
                     // Auto-save after upload
                     if (draftStarted) {
                         triggerAutoSave();
@@ -1179,18 +1334,9 @@
             const numTeams = document.getElementById('numTeamsSelect').value;
             const seasonName = document.getElementById('seasonNameInput').value;
             
-            if (!numTeams) {
-                console.error('Please select the number of teams.');
-                return;
-            }
-            
-            if (!seasonName.trim()) {
-                console.error('Please enter a season name.');
-                return;
-            }
-            
-            if (players.length === 0) {
-                console.error('Please upload a player file first.');
+            // Double-check validation (should already be validated by button state)
+            if (!validateStartRequirements()) {
+                console.error('Cannot start draft - missing requirements');
                 return;
             }
 
@@ -1216,6 +1362,9 @@
             updateColorDropdowns(); // Initialize color dropdown states
             draftStarted = true;
             updateButtonStates();
+            
+            // Hide requirements message after starting
+            document.getElementById('startRequirements').style.display = 'none';
             
             console.log('Draft started with ' + numTeams + ' teams for season: ' + seasonName);
             
