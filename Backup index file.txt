@@ -290,26 +290,6 @@
         .player-card.compact .player-detail:not(.show-compact) {
             display: none;
         }
-        
-        .player-card.compact .skill-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .warning-icon {
-            color: #e74c3c;
-            font-size: 14px;
-            font-weight: bold;
-            display: inline-block;
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.6; }
-            100% { opacity: 1; }
-        }
 
         .player-name {
             font-weight: bold;
@@ -368,41 +348,15 @@
             background-color: #3a3a3a;
         }
 
-        /* Missing rating styles - multiple selectors for specificity */
-        select.missing-rating,
-        .missing-rating.skill-select,
-        .missing-rating.player-edit-select,
-        .player-card .missing-rating,
-        .player-card.compact .missing-rating,
-        .player-details .missing-rating {
-            background-color: #e74c3c !important;
-            color: white !important;
-            border: 1px solid #c0392b !important;
-            font-weight: bold !important;
-        }
-
-        select.missing-rating:hover,
-        .missing-rating.skill-select:hover,
-        .missing-rating.player-edit-select:hover {
-            background-color: #c0392b !important;
-        }
-        
-        /* Specific targeting for compact mode select elements */
-        .compact .player-details select.missing-rating {
-            background-color: #e74c3c !important;
-            color: white !important;
-            border-color: #c0392b !important;
-        }
-        
-        /* Target the option text as well */
-        select.missing-rating option {
-            background-color: #2a2a2a;
-            color: #e0e0e0;
-        }
-        
-        select.missing-rating option[value="0"] {
+        .player-edit-select.missing-rating {
             background-color: #e74c3c;
             color: white;
+            border-color: #c0392b;
+            font-weight: bold;
+        }
+
+        .player-edit-select.missing-rating:hover {
+            background-color: #c0392b;
         }
 
         /* Zero Rating Warning Modal */
@@ -1858,3 +1812,6 @@
     </script>
 </body>
 </html>
+
+
+
