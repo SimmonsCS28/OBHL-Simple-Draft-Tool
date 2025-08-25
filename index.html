@@ -362,8 +362,33 @@
             color: #aaa;
         }
 
-        .player-detail {
-            margin-bottom: 2px;
+        .player-detail.buddy-reciprocal {
+            background-color: #27ae60;
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .player-detail.buddy-reciprocal:hover {
+            background-color: #229954;
+        }
+        
+        .buddy-tooltip {
+            position: absolute;
+            background-color: #2a2a2a;
+            color: white;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            z-index: 1000;
+            white-space: nowrap;
+            display: none;
+        }
+        
+        .buddy-tooltip.show {
+            display: block;
         }
 
         .player-detail.missing-rating {
@@ -753,6 +778,7 @@
         let draftStarted = false;
         let compactView = false;
         let seasonName = '';
+        let reciprocalBuddies = {}; // Store reciprocal buddy relationships
 
         // Storage configuration
         const STORAGE_KEY = 'hockeyDraftState';
@@ -776,7 +802,128 @@
             { value: 'white', label: 'White', class: 'team-white' }
         ];
 
-        // Validation function to check if ready to start draft
+        // Buddy pick functions
+        function normalizeNameForMatching(name) {
+            // Normalize name for matching: lowercase, trim, remove extra spaces
+            return name.toLowerCase().trim().replace(/\s+/g, ' ');
+        }
+        
+        function findPlayerByName(name) {
+            const normalized = normalizeNameForMatching(name);
+            
+            // Try exact match first
+            let player = players.find(p => 
+                normalizeNameForMatching(p.name) === normalized ||
+                normalizeNameForMatching(p.firstName + ' ' + p.lastName) === normalized
+            );
+            
+            // Try last name only
+            if (!player) {
+                player = players.find(p => 
+                    normalizeNameForMatching(p.lastName) === normalized
+                );
+            }
+            
+            // Try first name only
+            if (!player) {
+                player = players.find(p => 
+                    normalizeNameForMatching(p.firstName) === normalized
+                );
+            }
+            
+            // Try partial match
+            if (!player) {
+                player = players.find(p => 
+                    normalizeNameForMatching(p.name).includes(normalized) ||
+                    normalized.includes(normalizeNameForMatching(p.lastName))
+                );
+            }
+            
+            return player;
+        }
+        
+        function parseBuddyNames(buddyString) {
+            if (!buddyString) return [];
+            
+            // Split by comma and clean up each name
+            return buddyString.split(',')
+                .map(name => name.trim())
+                .filter(name => name.length > 0);
+        }
+        
+        function findReciprocalBuddies() {
+            reciprocalBuddies = {};
+            
+            players.forEach(player => {
+                if (!player.buddyPick) return;
+                
+                const buddyNames = parseBuddyNames(player.buddyPick);
+                const reciprocalList = [];
+                
+                buddyNames.forEach(buddyName => {
+                    const buddyPlayer = findPlayerByName(buddyName);
+                    
+                    if (buddyPlayer && buddyPlayer.id !== player.id) {
+                        // Check if buddy has this player in their buddy pick
+                        const buddysBuddies = parseBuddyNames(buddyPlayer.buddyPick);
+                        
+                        const hasReciprocal = buddysBuddies.some(name => {
+                            const matchedPlayer = findPlayerByName(name);
+                            return matchedPlayer && matchedPlayer.id === player.id;
+                        });
+                        
+                        if (hasReciprocal) {
+                            reciprocalList.push({
+                                id: buddyPlayer.id,
+                                name: buddyPlayer.name
+                            });
+                        }
+                    }
+                });
+                
+                if (reciprocalList.length > 0) {
+                    reciprocalBuddies[player.id] = reciprocalList;
+                }
+            });
+            
+            console.log('Reciprocal buddies found:', reciprocalBuddies);
+        }
+        
+        function getReciprocalBuddiesForPlayer(playerId) {
+            return reciprocalBuddies[playerId] || [];
+        }
+        
+        function addBuddiesToTeam(playerId, teamId) {
+            const buddies = getReciprocalBuddiesForPlayer(playerId);
+            let addedCount = 0;
+            
+            buddies.forEach(buddy => {
+                const buddyPlayer = players.find(p => p.id === buddy.id);
+                
+                // Only add if buddy is in pool and has valid skill rating
+                if (buddyPlayer && buddyPlayer.teamId === null) {
+                    if (buddyPlayer.skillRating === 0) {
+                        console.warn(`Cannot add buddy ${buddyPlayer.name} - missing skill rating`);
+                    } else {
+                        // Move buddy to team
+                        buddyPlayer.teamId = teamId;
+                        teams[teamId - 1].players.push(buddyPlayer);
+                        addedCount++;
+                        console.log(`Added buddy ${buddyPlayer.name} to team ${teamId}`);
+                    }
+                }
+            });
+            
+            if (addedCount > 0) {
+                // Update displays
+                renderPlayers();
+                renderTeamPlayers(teamId);
+                updateTeamStats(teamId);
+                triggerAutoSave();
+            }
+            
+            return addedCount;
+        }
         function validateStartRequirements() {
             const numTeams = document.getElementById('numTeamsSelect').value;
             const seasonName = document.getElementById('seasonNameInput').value.trim();
@@ -977,6 +1124,9 @@
                 
                 renderPlayers();
                 document.getElementById('clearStorageBtn').style.display = 'inline-block';
+                
+                // Recalculate reciprocal buddies after loading
+                findReciprocalBuddies();
                 
                 // Validate requirements after loading
                 validateStartRequirements();
@@ -1305,6 +1455,9 @@
                     renderPlayers();
                     console.log('File uploaded successfully! Loaded ' + players.length + ' players.');
                     
+                    // Find reciprocal buddy relationships
+                    findReciprocalBuddies();
+                    
                     // Count players with missing ratings
                     const missingRatings = players.filter(p => p.skillRating === 0).length;
                     const validRatings = players.filter(p => p.skillRating > 0).length;
@@ -1362,6 +1515,9 @@
             updateColorDropdowns(); // Initialize color dropdown states
             draftStarted = true;
             updateButtonStates();
+            
+            // Find reciprocal buddies after starting draft
+            findReciprocalBuddies();
             
             // Hide requirements message after starting
             document.getElementById('startRequirements').style.display = 'none';
