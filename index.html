@@ -1452,11 +1452,12 @@
                         };
                     });
                     
+                    // Find reciprocal buddy relationships BEFORE rendering
+                    findReciprocalBuddies();
+                    
+                    // Now render players with buddy highlighting
                     renderPlayers();
                     console.log('File uploaded successfully! Loaded ' + players.length + ' players.');
-                    
-                    // Find reciprocal buddy relationships
-                    findReciprocalBuddies();
                     
                     // Count players with missing ratings
                     const missingRatings = players.filter(p => p.skillRating === 0).length;
